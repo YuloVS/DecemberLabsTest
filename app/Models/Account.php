@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Account extends Model
@@ -25,5 +26,11 @@ class Account extends Model
     : HasOne
     {
         return $this->hasOne(Currency::class);
+    }
+
+    public function transactions()
+    : HasMany
+    {
+        return $this->hasMany(Transaction::class);
     }
 }
