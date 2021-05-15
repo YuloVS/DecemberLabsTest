@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Helpers\Fixerio;
+use App\Helpers\CurrencyConverter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -40,22 +40,6 @@ class Account extends Model
         return $this->hasMany(Transaction::class, "origin_account_id", "id");
     }
 
-    private function shouldConvertTransaction(Account $destinyAccount)
-    : bool
-    {
-        return !($this->currency_id == $destinyAccount->currency_id);
-    }
-
-    public function convertTransaction(Account $destinyAccount, float $amount)
-    : float
-    {
-        if($this->shouldConvertTransaction($destinyAccount))
-        {
-            return $amount / Fixerio::currencyRate($this->currency->symbol) * Fixerio::currencyRate($destinyAccount->currency->symbol);
-        }
-        return $amount;
-    }
-
     public function makeTransaction(Account $destinyAccount, float $amount, string $description)
     : Model
     {
@@ -63,7 +47,7 @@ class Account extends Model
                                                      "destination_account_id" => $destinyAccount->id,
                                                      "amount"                 => $amount,
                                                      "description"            => $description,
-                                                     "converted"              => $this->convertTransaction($destinyAccount, $amount)
+                                                     "converted"              => CurrencyConverter::convertTransaction($this, $destinyAccount, $amount)
                                                  ]);
     }
 }
