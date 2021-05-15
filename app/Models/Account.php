@@ -28,9 +28,15 @@ class Account extends Model
         return $this->hasOne(Currency::class);
     }
 
-    public function transactions()
+    public function receivedTransactions()
     : HasMany
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(Transaction::class, "destination_account_id", "id");
+    }
+
+    public function madeTransactions()
+    : HasMany
+    {
+        return $this->hasMany(Transaction::class, "origin_account_id", "id");
     }
 }

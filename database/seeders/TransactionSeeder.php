@@ -21,7 +21,7 @@ class TransactionSeeder extends Seeder
                            "origin_account_id"      => $account,
                            "destination_account_id" => Account::all()->whereNotIn("id", $account->id)->random()
                        ])->toArray();
-            $account->transactions()->insert($transactions);
+            $account->madeTransactions()->insert($transactions);
         });
     }
 }
