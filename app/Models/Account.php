@@ -40,6 +40,12 @@ class Account extends Model
         return $this->hasMany(Transaction::class, "origin_account_id", "id");
     }
 
+    public function houseAccountsRegistry()
+    : HasMany
+    {
+        return $this->hasMany(HouseAccountsRegistry::class);
+    }
+
     /**
      * @throws \Exception
      */
