@@ -11,7 +11,7 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        "amount", "description", "converted"
+        "destination_account_id", "amount", "description", "converted"
     ];
 
     public function originAccount()

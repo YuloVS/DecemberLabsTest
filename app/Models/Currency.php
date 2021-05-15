@@ -2,9 +2,8 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Currency extends Model
 {
@@ -13,8 +12,8 @@ class Currency extends Model
     ];
 
     public function account()
-    : BelongsTo
+    : HasMany
     {
-        return $this->belongsTo(Account::class);
+        return $this->hasMany(Account::class);
     }
 }
