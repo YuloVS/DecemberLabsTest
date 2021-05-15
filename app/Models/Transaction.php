@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Events\TransactionCreated;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +12,11 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        "destination_account_id", "amount", "description", "converted"
+        "destination_account_id", "amount", "description", "converted", "complete"
+    ];
+
+    protected $dispatchesEvents = [
+        "created" => TransactionCreated::class
     ];
 
     public function originAccount()

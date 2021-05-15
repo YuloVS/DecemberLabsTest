@@ -20,6 +20,7 @@ class CreateTransactionsTable extends Migration
             $table->decimal("amount", 19, 4);
             $table->string("description", 140);
             $table->decimal("converted", 19, 4);
+            $table->timestamp("complete")->nullable();
             $table->timestamps();
         });
     }
