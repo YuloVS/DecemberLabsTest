@@ -52,7 +52,7 @@ class Account extends Model
     public function makeTransaction(Account $destinyAccount, float $amount, string $description)
     : Model
     {
-        if($amount > $this->balance)
+        if($amount > $this->balance * config("transaction_commission"))
             throw new \Exception("Insufficient funds");
         return $this->madeTransactions()->create([
                                                      "destination_account_id" => $destinyAccount->id,

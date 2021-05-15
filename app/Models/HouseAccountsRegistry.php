@@ -15,4 +15,11 @@ class HouseAccountsRegistry extends Model
     {
         return $this->belongsTo(Account::class);
     }
+
+    public static function getAccountOfCurrency(int $commissionCurrency)
+    {
+        return self::whereHas("account", function($query) use ($commissionCurrency){
+            return $query->whereCurrencyId($commissionCurrency);
+        })->first()->account;
+    }
 }
