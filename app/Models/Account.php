@@ -40,9 +40,14 @@ class Account extends Model
         return $this->hasMany(Transaction::class, "origin_account_id", "id");
     }
 
+    /**
+     * @throws \Exception
+     */
     public function makeTransaction(Account $destinyAccount, float $amount, string $description)
     : Model
     {
+        if($amount > $this->balance)
+            throw new \Exception("Insufficient funds");
         return $this->madeTransactions()->create([
                                                      "destination_account_id" => $destinyAccount->id,
                                                      "amount"                 => $amount,
