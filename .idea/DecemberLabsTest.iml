@@ -114,11 +114,6 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/laravel/sail" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/laravel/framework" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/opis/closure" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/uri-template" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/guzzle-services" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/guzzlehttp/command" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/ranium/fixerio-php-client" />
-      <excludeFolder url="file://$MODULE_DIR$/vendor/ranium/laravel-fixerio" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
