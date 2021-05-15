@@ -32,11 +32,6 @@ class Fixerio
         }
     }
 
-    public static function latest()
-    {
-        return app(self::class)->get("latest");
-    }
-
     public function get(string $param)
     : array
     {
@@ -45,7 +40,28 @@ class Fixerio
                 "access_key" => $this->key
             ])->json();
         });
-
     }
 
+    public static function latest()
+    {
+        return app(self::class)->get("latest");
+    }
+
+    public static function latestRates()
+    : array
+    {
+        return app(self::class)->get("latest")["rates"];
+    }
+
+    public static function currencyRate(string $symbol)
+    : ?float
+    {
+        return app(self::class)->get("latest")["rates"][$symbol] ?? null;
+    }
+
+    public static function base()
+    : string
+    {
+        return app(self::class)->get("latest")["base"];
+    }
 }
