@@ -17,7 +17,7 @@ class CreateAccountsTable extends Migration
             $table->id();
             $table->foreignId("user_id")->constrained();
             $table->foreignId("currency_id")->constrained();
-            $table->decimal("balance", 19, 4);
+            $table->decimal("balance", 19, 4)->default(0);
             $table->timestamps();
         });
     }
