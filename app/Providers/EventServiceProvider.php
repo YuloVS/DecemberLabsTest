@@ -14,9 +14,6 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        TransactionCreated::class => [
-            UpdateBalances::class
-        ]
     ];
 
     /**

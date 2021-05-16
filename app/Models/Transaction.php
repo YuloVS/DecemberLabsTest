@@ -15,10 +15,6 @@ class Transaction extends Model
         "destination_account_id", "amount", "description", "converted", "complete"
     ];
 
-    protected $dispatchesEvents = [
-        "created" => TransactionCreated::class
-    ];
-
     public function originAccount()
     : BelongsTo
     {

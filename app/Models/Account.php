@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class Account extends Model
 {
@@ -50,15 +52,34 @@ class Account extends Model
      * @throws \Exception
      */
     public function makeTransaction(Account $destinyAccount, float $amount, string $description)
-    : Model
     {
-        if($amount > $this->balance * config("transaction_commission"))
+        if($amount > $this->balance + $this->balance * config("transaction_commission"))
             throw new \Exception("Insufficient funds");
-        return $this->madeTransactions()->create([
+        DB::beginTransaction();
+        $transaction = $this->madeTransactions()->create([
                                                      "destination_account_id" => $destinyAccount->id,
                                                      "amount"                 => $amount,
                                                      "description"            => $description,
                                                      "converted"              => CurrencyConverter::convertTransaction($this, $destinyAccount, $amount)
                                                  ]);
+        $this->updateBalances($transaction);
+    }
+
+    public function updateBalances(Model $transaction)
+    {
+        $commissionCurrency = $this->currency_id;
+        $amountWithComission = $transaction->amount;
+        $commissionAmount = 0;
+        if($this->user->isNot($transaction->destinationAccount->user))
+        {
+            $commissionAmount = config("transaction_commission") * $transaction->amount;
+            $amountWithComission += $commissionAmount;
+        }
+        $this->update([ "balance" => $this->balance - $amountWithComission ]);
+        $transaction->destinationAccount()->update([ "balance" => $transaction->destinationAccount->balance + $transaction->converted ]);
+        $houseAccount = HouseAccountsRegistry::getAccountOfCurrency($commissionCurrency);
+        $houseAccount->update([ "balance" => $houseAccount->balance + $commissionAmount ]);
+        $transaction->update([ "complete" => Carbon::now() ]);
+        DB::commit();
     }
 }
