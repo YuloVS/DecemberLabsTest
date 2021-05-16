@@ -16,6 +16,8 @@ class TransactionSeeder extends Seeder
     public function run()
     {
         Account::all()->each(function($account){
+            if($account->balance <= 0)
+                return;
             for($i = 1; $i <= rand(1, 16); $i++)
             {
                 if(Factory::create()->boolean())
