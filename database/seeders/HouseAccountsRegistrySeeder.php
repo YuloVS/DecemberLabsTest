@@ -6,6 +6,7 @@ use App\Models\Currency;
 use App\Models\HouseAccountsRegistry;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class HouseAccountsRegistrySeeder extends Seeder
 {
@@ -14,7 +15,8 @@ class HouseAccountsRegistrySeeder extends Seeder
         /** @var User $admin */
         $admin = User::factory()->create([
                                              "name"  => "Admin",
-                                             "email" => "admin@".env("APP_NAME", "Laravel").".com"
+                                             "email" => "admin@test.com",
+                                             "password" => Hash::make("admin")
                                          ]);
         foreach(Currency::all() as $currency)
         {
@@ -25,5 +27,6 @@ class HouseAccountsRegistrySeeder extends Seeder
                 "account_id" => $account->id
                                           ]);
         }
+        $admin->createToken("admin");
     }
 }
