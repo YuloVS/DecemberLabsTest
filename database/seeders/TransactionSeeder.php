@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Account;
-use App\Models\Transaction;
+use Faker\Factory;
 use Illuminate\Database\Seeder;
 
 class TransactionSeeder extends Seeder
@@ -15,13 +15,20 @@ class TransactionSeeder extends Seeder
      */
     public function run()
     {
-        $accounts = Account::all()->each(function($account){
-            $transactions = Transaction::factory()->count(100)
-                ->make([
-                           "origin_account_id"      => $account,
-                           "destination_account_id" => Account::all()->whereNotIn("id", $account->id)->random()
-                       ])->toArray();
-            $account->madeTransactions()->insert($transactions);
+        Account::all()->each(function($account){
+            for($i = 1; $i <= rand(1, 16); $i++)
+            {
+                if(Factory::create()->boolean())
+                {
+                    $account->makeTransaction(
+                        Account::all()->whereNotIn("id", $account->id)->random(),
+                        Factory::create()->randomFloat(4, 0, $account->balance - $account->balance * config("transaction_commission") ),
+                        Factory::create()->text(140)
+                    );
+                }
+            }
+
         });
+
     }
 }

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Helpers\CurrencyConverter;
 use App\Models\Account;
 use App\Models\Transaction;
 use Carbon\Carbon;
@@ -25,11 +26,11 @@ class TransactionFactory extends Factory
     : array
     {
         return [
-            "origin_account_id"      => Account::factory(),
-            "destination_account_id" => Account::factory(),
-            "amount"                 => $this->faker->randomFloat(4),
+            "origin_account_id"      => $origin = Account::factory()->make(),
+            "destination_account_id" => $destiny = Account::factory()->make(),
+            "amount"                 => $amount = $this->faker->randomFloat(4, 0, $origin->balance),
             "description"            => $this->faker->text(140),
-            "converted"              => $this->faker->randomFloat(4)
+            "converted"              => CurrencyConverter::convertTransaction($origin, $destiny, $amount)
         ];
     }
 }
