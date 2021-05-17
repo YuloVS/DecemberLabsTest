@@ -31,4 +31,47 @@ class User extends Authenticatable
     {
         return $this->hasMany(Account::class);
     }
+
+    public function transactions($from=null, $to=null, $sourceAccountId=null)
+    : array
+    {
+        $madeTransactions = [];
+        $receivedTransactions = [];
+
+        is_null($sourceAccountId) ? $accounts = $this->accounts : $accounts = $this->accounts->where("id", "=", $sourceAccountId);
+
+        foreach($accounts as $account)
+        {
+            if(!is_null($from) && !is_null($to))
+            {
+                $iMadeTransactions = $account->madeTransactions->whereBetween("complete", [$from, $to]);
+                $iReceivedTransactions = $account->receivedTransactions->whereBetween("complete", [$from, $to]);
+            }
+            elseif(!is_null($from) && is_null($to))
+            {
+                $iMadeTransactions = $account->madeTransactions->where("complete", ">", $from);
+                $iReceivedTransactions = $account->receivedTransactions->where("complete", ">", $from);
+            }
+            else
+            {
+                $iMadeTransactions = $account->madeTransactions;
+                $iReceivedTransactions = $account->receivedTransactions;
+            }
+
+            foreach($iMadeTransactions as $madeTransaction)
+            {
+                array_push($madeTransactions, $madeTransaction);
+            }
+            foreach($iReceivedTransactions as $receivedTransaction)
+            {
+                array_push($receivedTransactions, $receivedTransaction);
+            }
+        }
+
+        return [
+            "transactions" => $madeTransactions + $receivedTransactions,
+            "made_transactions" => $madeTransactions,
+            "received_transactions" => $receivedTransactions
+        ];
+    }
 }
