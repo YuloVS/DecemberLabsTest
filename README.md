@@ -315,7 +315,7 @@ required: body=[{
 }]
 ```
 
-Success Response (CODE 200): 
+Success Response (CODE 201): 
 
 
 #Authenticated 
