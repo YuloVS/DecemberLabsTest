@@ -13,6 +13,12 @@ php artisan migrate
 ```
 php artisan db:seed
 ```
+## Live server
+You can test the api:
+https://decemberlabsttest.herokuapp.com/api
+
+## Postman Collection
+[Here](https://www.getpostman.com/collections/1260951c8b7e21d6739a) you can get a postman collection.
 
 ## Architecture
 Models (with migrations, factories and seeders):
@@ -362,8 +368,6 @@ Error Response:
 }
 ```
 <br>
-
-[Here](https://www.getpostman.com/collections/1260951c8b7e21d6739a) you can download a postman collection.
 
 ## Possible improvements
 - Add feature and unit tests
