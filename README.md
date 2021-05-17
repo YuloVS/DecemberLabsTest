@@ -9,6 +9,7 @@ Models (with migrations, factories and seeders):
 - HouseAccountsRegistry (stores the ids of the "bank" accounts, where the transactions commission amount are added).
 - Transaction
 - User
+
 ![ERD](https://i.ibb.co/Lxc6Rbh/der-accounts.png)
 
 Seeders:
