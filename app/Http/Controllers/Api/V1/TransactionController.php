@@ -20,8 +20,10 @@ class TransactionController extends Controller
             "To" => "nullable|date|after:From",
             "SourceAccountID" => "nullable|integer"
                            ]);
-        $transactions = Auth::user()->transactions($request->From, $request->To, $request->SourceAccountID)["transactions"];
-        return new TransactionCollection($transactions);
+        $transactions = Auth::user()->transactions($request->From, $request->To, $request->SourceAccountID);
+        if($request->SourceAccountID)
+            return new TransactionCollection($transactions["made_transactions"]);
+        return new TransactionCollection($transactions["transactions"]);
     }
 
     public function store(Request $request)
