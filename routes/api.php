@@ -16,4 +16,4 @@ Route::apiResource('transactions', TransactionController::class)
     ->only(["index"])
     ->middleware("auth:sanctum");
 
-//Route::post("transfer");
+Route::post('transfer', [TransactionController::class, 'store'])->middleware("auth:sanctum");

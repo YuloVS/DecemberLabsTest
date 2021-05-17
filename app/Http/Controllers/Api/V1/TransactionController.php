@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\TransactionCollection;
+use App\Http\Resources\V1\TransactionResource;
+use App\Models\Account;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 class TransactionController extends Controller
 {
     public function index(Request $request)
+    : TransactionCollection
     {
         $request->validate([
             "From" => "nullable|date",
@@ -21,48 +24,28 @@ class TransactionController extends Controller
         return new TransactionCollection($transactions);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
+    : TransactionResource
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Transaction  $transaction
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Transaction $transaction)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Transaction  $transaction
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Transaction $transaction)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Transaction  $transaction
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Transaction $transaction)
-    {
-        //
+        $request->validate([
+            "body.accountFrom" => "required|exists:accounts,id",
+            "body.accountTo" => "required|exists:accounts,id|different:accountFrom",
+            "body.amount" => "required|numeric",
+            "body.date" => "required|date",
+            "body.description" => "required|max:140"
+                           ]);
+        $account = Auth::user()->accounts->where("id", "=", $request->body["accountFrom"]);
+        if($account->count() == 0)
+        {
+            abort(403, "Unauthorized");
+        }
+        if($account->pluck("balance")[0] < $request->body["amount"])
+        {
+            abort(403, "Insufficient funds");
+        }
+        return new TransactionResource(
+            $account->first()
+                ->makeTransaction(Account::find($request->body["accountTo"]), $request->body["amount"], $request->body["description"], $request->body["date"])
+        );
     }
 }

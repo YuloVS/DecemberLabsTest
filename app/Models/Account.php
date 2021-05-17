@@ -51,18 +51,23 @@ class Account extends Model
     /**
      * @throws \Exception
      */
-    public function makeTransaction(Account $destinyAccount, float $amount, string $description)
+    public function makeTransaction(Account $destinyAccount, float $amount, string $description, $complete = null)
+    : Model
     {
         if($amount > $this->balance + $this->balance * config("transaction_commission"))
+        {
             throw new \Exception("Insufficient funds");
+        }
         DB::beginTransaction();
         $transaction = $this->madeTransactions()->create([
-                                                     "destination_account_id" => $destinyAccount->id,
-                                                     "amount"                 => $amount,
-                                                     "description"            => $description,
-                                                     "converted"              => CurrencyConverter::convertTransaction($this, $destinyAccount, $amount)
-                                                 ]);
+                                                             "destination_account_id" => $destinyAccount->id,
+                                                             "amount"                 => $amount,
+                                                             "description"            => $description,
+                                                             "converted"              => CurrencyConverter::convertTransaction($this, $destinyAccount, $amount),
+                                                             "complete"               => Carbon::parse($complete)
+                                                         ]);
         $this->updateBalances($transaction);
+        return $transaction;
     }
 
     public function updateBalances(Model $transaction)
@@ -75,11 +80,11 @@ class Account extends Model
             $commissionAmount = config("transaction_commission") * $transaction->amount;
             $amountWithComission += $commissionAmount;
         }
-        $this->update([ "balance" => $this->balance - $amountWithComission ]);
-        $transaction->destinationAccount()->update([ "balance" => $transaction->destinationAccount->balance + $transaction->converted ]);
+        $this->update(["balance" => $this->balance - $amountWithComission]);
+        $transaction->destinationAccount()->update(["balance" => $transaction->destinationAccount->balance + $transaction->converted]);
         $houseAccount = HouseAccountsRegistry::getAccountOfCurrency($commissionCurrency);
-        $houseAccount->update([ "balance" => $houseAccount->balance + $commissionAmount ]);
-        $transaction->update([ "complete" => Carbon::now() ]);
+        $houseAccount->update(["balance" => $houseAccount->balance + $commissionAmount]);
+        $transaction->update(["complete" => Carbon::now()]);
         DB::commit();
     }
 }
