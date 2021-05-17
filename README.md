@@ -41,20 +41,20 @@ Collections:
 # API endpoints #
 ## Login ##
 Get user API token.
-###URL: ###
+##URL: ##
     /api/v1/login
-###Method: ###
+##Method: ##
     POST
-###Data Params: ###
+##Data Params: ##
     required: email
     required: password
-###Success Response (CODE 200): ###
-####Correct credentials ####
+##Success Response (CODE 200): ##
+###Correct credentials ###
     {
         "token": "8|f9pDfEuxeeXHWLBj7YazEaYVw73WICqQBj34yenJ",
         "message": "Success, please write down the token"
     }
-####Wrong credentials ####
+###Wrong credentials ####
     {
         "message": "Unauthorized"
     }
