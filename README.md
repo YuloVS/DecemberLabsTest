@@ -2,6 +2,18 @@
 
 This proyect was made following the instructions given by mail
 
+## Installation
+Create and configure .env (don't forget to create the database and set the fixerio key)
+```
+composer install
+```
+```
+php artisan migrate
+```
+```
+php artisan db:seed
+```
+
 ## Architecture
 Models (with migrations, factories and seeders):
 - Account
@@ -41,192 +53,244 @@ Collections:
 # API endpoints #
 ## Login ##
 Get user API token.
-<h3>URL</h3>
-    /api/v1/login
-<h3>URL</h3>
-    POST
-<h3>URL</h3>
-    required: email
-    required: password
-<h3>URL</h3>
-<h3>URL</h3>
-    {
-        "token": "8|f9pDfEuxeeXHWLBj7YazEaYVw73WICqQBj34yenJ",
-        "message": "Success, please write down the token"
-    }
-<h3>URL</h3>
-    {
-        "message": "Unauthorized"
-    }
+###URL: ###
+```
+/api/v1/login
+```
+###Method: ###
+```
+POST
+```
+###Data Params: ###
+```
+required: email
+required: password
+```
+###Success Response (CODE 200): ###
+####Correct credentials ####
+```
+{
+    "token": "8|f9pDfEuxeeXHWLBj7YazEaYVw73WICqQBj34yenJ",
+    "message": "Success, please write down the token"
+}
+```
+####Wrong credentials ####
+```
+{
+    "message": "Unauthorized"
+}
+```
 ## Show User Accounts ##
 Get all the accounts from the authenticated user.
 ###URL: ###
-    /api/v1/accounts
+```    
+/api/v1/accounts
+```
 ###Method: ###
-    GET
+```    
+GET
+```
 ###Success Response (CODE 200): ###
 ####Authenticated ####
-    {
-        "data": [
-            {
-                "id": 7,
-                "user_id": 4,
-                "user": "Antwan O'Connell",
-                "currency_id": 3,
-                "currency": "UYU",
-                "balance": "45864.9446"
-            },
-            {
-                "id": 8,
-                "user_id": 4,
-                "user": "Antwan O'Connell",
-                "currency_id": 3,
-                "currency": "UYU",
-                "balance": "4430.4049"
-            },
-            {
-                "id": 9,
-                "user_id": 4,
-                "user": "Antwan O'Connell",
-                "currency_id": 1,
-                "currency": "EUR",
-                "balance": "19154.1308"
-            }
-        ]
-    }
+```    
+{
+    "data": [
+        {
+            "id": 7,
+            "user_id": 4,
+            "user": "Antwan O'Connell",
+            "currency_id": 3,
+            "currency": "UYU",
+            "balance": "45864.9446"
+        },
+        {
+            "id": 8,
+            "user_id": 4,
+            "user": "Antwan O'Connell",
+            "currency_id": 3,
+            "currency": "UYU",
+            "balance": "4430.4049"
+        },
+        {
+            "id": 9,
+            "user_id": 4,
+            "user": "Antwan O'Connell",
+            "currency_id": 1,
+            "currency": "EUR",
+            "balance": "19154.1308"
+        }
+    ]
+}
+```
 ###Error Response: ###
 ####Not authenticated (CODE 401) ####
-    {
-        "message": "Unauthenticated"
-    }
+```
+{
+    "message": "Unauthenticated"
+}
+```
 ## Show Account Details ##
 Get all the accounts from the authenticated user.
 ###URL: ###
-    /api/v1/accounts/{id}
+```    
+/api/v1/accounts/{id}
+```
 ###Method: ###
-    GET
+```    
+GET
+```
 ###Success Response (CODE 200): ###
 ####Authenticated ####
-    {
-        "data": {
-            "id": 7,
-            "user_id": 4,
-            "user": "Lyric Rogahn I",
-            "currency_id": 1,
-            "currency": "EUR",
-            "balance": "23405.4171"
-        }
+```
+{
+    "data": {
+        "id": 7,
+        "user_id": 4,
+        "user": "Lyric Rogahn I",
+        "currency_id": 1,
+        "currency": "EUR",
+        "balance": "23405.4171"
     }
+}
+```
 ###Error Response: ###
 ####Not authenticated (CODE 401) ####
-    {
-        "message": "Unauthenticated"
-    }
+```
+{
+    "message": "Unauthenticated"
+}
+```
 ####Try to access to another user account (CODE 403) ####
-    {
-        "message": "This action is unauthorized."
-    }
+```
+{
+    "message": "This action is unauthorized."
+}
+```
 ## Show Transactions Details ##
 Get all the transactions from accounts of the authenticated user.
 ###URL: ###
-    /api/transactions
+```
+/api/transactions
+```
 ###Method: ###
-    GET
+```
+GET
+```
 ###URL Params: ###
-    optional: From=[Date]
-    optional: To=[Date]
-    optional: SourceAccountID=[integer]
+```
+optional: From=[Date]
+optional: To=[Date]
+optional: SourceAccountID=[integer]
+```
 ###Success Response (CODE 200): ###
 ####Authenticated ####
-    {
-        "data": [
-            {
-                "id": 7,
-                "origin_account_id": 7,
-                "origin_account": {
-                    "id": 7,
-                    "user_id": 4,
-                    "user": "Lyric Rogahn I",
-                    "currency_id": 1,
-                    "currency": "EUR",
-                    "balance": "23405.4171"
-                },
-                "destination_account_id": 6,
-                "destination_account": {
-                    "id": 6,
-                    "user_id": 3,
-                    "user": "Lucy Stokes",
-                    "currency_id": 2,
-                    "currency": "USD"
-                },
-                "amount": "13117.9197",
-                "description": "Qui minima sit praesentium. Quidem laboriosam vero sint ipsum sapiente amet debitis. Magni neque doloribus reprehenderit est quis eaque.",
-                "converted": "15945.2249",
-                "complete": "2021-05-17 17:18:16"
-            },
-            ...
-        ]
-    }
-###Error Response: ###
-####Not authenticated (CODE 401) ####
-    {
-        "message": "Unauthenticated"
-    }
-####Try to access to another user account (CODE 403) ####
-    {
-        "message": "This action is unauthorized."
-    }
-## Make Transaction ##
-Make a transaction.
-###URL: ###
-    /api/transfer
-###Method: ###
-    POST
-###URL Params: ###
-    required: body=[{
-        accountFrom=[integer]
-        accountTo=[integer]
-        amoun=[float]
-        date=[Timestamp]
-        description=[string]
-    }]
-###Success Response (CODE 200): ###
-####Authenticated ####
-    {
-        "data": {
-            "id": 14,
-            "origin_account_id": 8,
+```
+{
+    "data": [
+        {
+            "id": 7,
+            "origin_account_id": 7,
             "origin_account": {
-                "id": 8,
+                "id": 7,
                 "user_id": 4,
                 "user": "Lyric Rogahn I",
                 "currency_id": 1,
                 "currency": "EUR",
-                "balance": "32996.4612"
+                "balance": "23405.4171"
             },
-            "destination_account_id": 4,
+            "destination_account_id": 6,
             "destination_account": {
-                "id": 4,
-                "user_id": 2,
-                "user": "Claudia Orn",
-                "currency_id": 3,
-                "currency": "UYU"
+                "id": 6,
+                "user_id": 3,
+                "user": "Lucy Stokes",
+                "currency_id": 2,
+                "currency": "USD"
             },
-            "amount": 1.12,
-            "description": "Test transaction",
-            "converted": 60.163554080000004,
-            "complete": "2021-05-17T17:58:30.342324Z"
-        }
-    }
+            "amount": "13117.9197",
+            "description": "Qui minima sit praesentium. Quidem laboriosam vero sint ipsum sapiente amet debitis. Magni neque doloribus reprehenderit est quis eaque.",
+            "converted": "15945.2249",
+            "complete": "2021-05-17 17:18:16"
+        },
+        ...
+    ]
+}
+```
 ###Error Response: ###
 ####Not authenticated (CODE 401) ####
-    {
-        "message": "Unauthenticated"
+```
+{
+    "message": "Unauthenticated"
+}
+```
+####Try to access to another user account (CODE 403) ####
+```
+{
+    "message": "This action is unauthorized."
+}
+```
+## Make Transaction ##
+Make a transaction.
+###URL: ###
+```    
+/api/transfer
+```
+###Method: ###
+```    
+POST
+```
+###URL Params: ###
+```
+required: body=[{
+    accountFrom=[integer]
+    accountTo=[integer]
+    amoun=[float]
+    date=[Timestamp]
+    description=[string]
+}]
+```
+###Success Response (CODE 200): ###
+####Authenticated ####
+```
+{
+    "data": {
+        "id": 14,
+        "origin_account_id": 8,
+        "origin_account": {
+            "id": 8,
+            "user_id": 4,
+            "user": "Lyric Rogahn I",
+            "currency_id": 1,
+            "currency": "EUR",
+            "balance": "32996.4612"
+        },
+        "destination_account_id": 4,
+        "destination_account": {
+            "id": 4,
+            "user_id": 2,
+            "user": "Claudia Orn",
+            "currency_id": 3,
+            "currency": "UYU"
+        },
+        "amount": 1.12,
+        "description": "Test transaction",
+        "converted": 60.163554080000004,
+        "complete": "2021-05-17T17:58:30.342324Z"
     }
+}
+```
+###Error Response: ###
+####Not authenticated (CODE 401) ####
+```
+{
+    "message": "Unauthenticated"
+}
+```
 ####Try to send from another user account (CODE 403) ####
-    {
-        "message": "This action is unauthorized."
-    }
+```
+{
+    "message": "This action is unauthorized."
+}
+```
 <br>
 
 [Here](https://www.getpostman.com/collections/1260951c8b7e21d6739a) you can download a postman collection.
@@ -238,3 +302,4 @@ Make a transaction.
 - Define minimum transaction amount, this can be added in the currencies table, allowing different minimum amounts for each currency, in turn you can define a listener so that when one changes, the increase (or decrease) is affected in the others currencies.
 - Use redis for cache.
 - Defining versioning in the API routes, to follow the instructions of the requested routes I did not do it, but you could add "vX" as a prefix in the routes, where X is the version number, allowing greater flexibility when updating the endpoints.
+- Remove unused code and refactor some pieces to more legible (and efficient) ones, for example the makeTransaction method in Account can be improved.
