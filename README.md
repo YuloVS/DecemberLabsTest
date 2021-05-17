@@ -53,28 +53,40 @@ Collections:
 # API endpoints #
 ## Login ##
 Get user API token.
-###URL: ###
+
+URL: 
+
 ```
 /api/v1/login
 ```
-###Method: ###
+
+Method: 
+
 ```
 POST
 ```
-###Data Params: ###
+
+Data Params: 
+
 ```
 required: email
 required: password
 ```
-###Success Response (CODE 200): ###
-####Correct credentials ####
+
+Success Response (CODE 200): 
+
+
+#Correct credentials 
+#
 ```
 {
     "token": "8|f9pDfEuxeeXHWLBj7YazEaYVw73WICqQBj34yenJ",
     "message": "Success, please write down the token"
 }
 ```
-####Wrong credentials ####
+
+#Wrong credentials 
+#
 ```
 {
     "message": "Unauthorized"
@@ -82,16 +94,24 @@ required: password
 ```
 ## Show User Accounts ##
 Get all the accounts from the authenticated user.
-###URL: ###
+
+URL: 
+
 ```    
 /api/v1/accounts
 ```
-###Method: ###
+
+Method: 
+
 ```    
 GET
 ```
-###Success Response (CODE 200): ###
-####Authenticated ####
+
+Success Response (CODE 200): 
+
+
+#Authenticated 
+#
 ```    
 {
     "data": [
@@ -122,8 +142,12 @@ GET
     ]
 }
 ```
-###Error Response: ###
-####Not authenticated (CODE 401) ####
+
+Error Response: 
+
+
+#Not authenticated (CODE 401) 
+#
 ```
 {
     "message": "Unauthenticated"
@@ -131,16 +155,24 @@ GET
 ```
 ## Show Account Details ##
 Get all the accounts from the authenticated user.
-###URL: ###
+
+URL: 
+
 ```    
 /api/v1/accounts/{id}
 ```
-###Method: ###
+
+Method: 
+
 ```    
 GET
 ```
-###Success Response (CODE 200): ###
-####Authenticated ####
+
+Success Response (CODE 200): 
+
+
+#Authenticated 
+#
 ```
 {
     "data": {
@@ -153,14 +185,20 @@ GET
     }
 }
 ```
-###Error Response: ###
-####Not authenticated (CODE 401) ####
+
+Error Response: 
+
+
+#Not authenticated (CODE 401) 
+#
 ```
 {
     "message": "Unauthenticated"
 }
 ```
-####Try to access to another user account (CODE 403) ####
+
+#Try to access to another user account (CODE 403) 
+#
 ```
 {
     "message": "This action is unauthorized."
@@ -168,22 +206,32 @@ GET
 ```
 ## Show Transactions Details ##
 Get all the transactions from accounts of the authenticated user.
-###URL: ###
+
+URL: 
+
 ```
 /api/transactions
 ```
-###Method: ###
+
+Method: 
+
 ```
 GET
 ```
-###URL Params: ###
+
+URL Params: 
+
 ```
 optional: From=[Date]
 optional: To=[Date]
 optional: SourceAccountID=[integer]
 ```
-###Success Response (CODE 200): ###
-####Authenticated ####
+
+Success Response (CODE 200): 
+
+
+#Authenticated 
+#
 ```
 {
     "data": [
@@ -215,14 +263,20 @@ optional: SourceAccountID=[integer]
     ]
 }
 ```
-###Error Response: ###
-####Not authenticated (CODE 401) ####
+
+Error Response: 
+
+
+#Not authenticated (CODE 401) 
+#
 ```
 {
     "message": "Unauthenticated"
 }
 ```
-####Try to access to another user account (CODE 403) ####
+
+#Try to access to another user account (CODE 403) 
+#
 ```
 {
     "message": "This action is unauthorized."
@@ -230,15 +284,21 @@ optional: SourceAccountID=[integer]
 ```
 ## Make Transaction ##
 Make a transaction.
-###URL: ###
+
+URL: 
+
 ```    
 /api/transfer
 ```
-###Method: ###
+
+Method: 
+
 ```    
 POST
 ```
-###URL Params: ###
+
+URL Params: 
+
 ```
 required: body=[{
     accountFrom=[integer]
@@ -248,8 +308,12 @@ required: body=[{
     description=[string]
 }]
 ```
-###Success Response (CODE 200): ###
-####Authenticated ####
+
+Success Response (CODE 200): 
+
+
+#Authenticated 
+#
 ```
 {
     "data": {
@@ -278,14 +342,20 @@ required: body=[{
     }
 }
 ```
-###Error Response: ###
-####Not authenticated (CODE 401) ####
+
+Error Response: 
+
+
+#Not authenticated (CODE 401) 
+#
 ```
 {
     "message": "Unauthenticated"
 }
 ```
-####Try to send from another user account (CODE 403) ####
+
+#Try to send from another user account (CODE 403) 
+#
 ```
 {
     "message": "This action is unauthorized."
