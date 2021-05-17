@@ -1,62 +1,239 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+## DecemberLabs Accounts and Transactions test
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+This proyect was made following the instructions given by mail
 
-## About Laravel
+## Architecture
+Models (with migrations, factories and seeders):
+- Account
+- Currency
+- HouseAccountsRegistry (stores the ids of the "bank" accounts, where the transactions commission amount are added).
+- Transaction
+- User
+![ERD](https://i.ibb.co/Lxc6Rbh/der-accounts.png)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Seeders:
+- Currency: creates three currencies registry (EUR, USD and UYU).
+- HouseAccountsRegistry: creates one account per currency for the "bank".
+- User: creates three users, one with one Account, one with two and one with three.
+- Transaction: creates a random quantity (1 to 16) of transactions for all accounts with balance greater than zero.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+*Note: this is not what seeders are meant for, I did it to make it easier for you to test it*
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Policies:
+- Account: view method (determines if the user can see de account only if it owns it).
 
-## Learning Laravel
+Controllers:
+- Login: It handles API authentication, for test convenience, it just returns a freshly created token if the credentials are correct.
+- Account: Provides index (list all accounts from the auth user) and show (show a specifi account from the auth user) methods.
+- Transaction: methods to make transactions and list all user transactions (or given account transactions).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Helpers:
+- CurrencyConverter: Determines if the amount of transaction must be converted and converts it if necessary, it comes with transaction_commision.php config file, where you can change the current commission percentage. *NOTE: This class is registered as a singleton in AppServiceProvided*
+- Fixerio: Gets and store in cache the current exchange rate data for all available currencies. It uses fixerio.php config file, where you can set the API key, if the subscription plan is premium and the caching time, by default it comes set to the free plan and 60 minutes of caching storage because that plan update the data hourly, so it´s pointless to make more requests.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Resources:
+- I made resources classes for Account and Transaction.
 
-## Laravel Sponsors
+Collections:
+- For previously named resources.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+# API endpoints #
+## Login ##
+Get user API token.
+###URL: ###
+    /api/v1/login
+###Method: ###
+    POST
+###Data Params: ###
+    required: email
+    required: password
+###Success Response (CODE 200): ###
+####Correct credentials ####
+    {
+        "token": "8|f9pDfEuxeeXHWLBj7YazEaYVw73WICqQBj34yenJ",
+        "message": "Success, please write down the token"
+    }
+####Wrong credentials ####
+    {
+        "message": "Unauthorized"
+    }
+## Show User Accounts ##
+Get all the accounts from the authenticated user.
+###URL: ###
+    /api/v1/accounts
+###Method: ###
+    GET
+###Success Response (CODE 200): ###
+####Authenticated ####
+    {
+        "data": [
+            {
+                "id": 7,
+                "user_id": 4,
+                "user": "Antwan O'Connell",
+                "currency_id": 3,
+                "currency": "UYU",
+                "balance": "45864.9446"
+            },
+            {
+                "id": 8,
+                "user_id": 4,
+                "user": "Antwan O'Connell",
+                "currency_id": 3,
+                "currency": "UYU",
+                "balance": "4430.4049"
+            },
+            {
+                "id": 9,
+                "user_id": 4,
+                "user": "Antwan O'Connell",
+                "currency_id": 1,
+                "currency": "EUR",
+                "balance": "19154.1308"
+            }
+        ]
+    }
+###Error Response: ###
+####Not authenticated (CODE 401) ####
+    {
+        "message": "Unauthenticated"
+    }
+## Show Account Details ##
+Get all the accounts from the authenticated user.
+###URL: ###
+    /api/v1/accounts/{id}
+###Method: ###
+    GET
+###Success Response (CODE 200): ###
+####Authenticated ####
+    {
+        "data": {
+            "id": 7,
+            "user_id": 4,
+            "user": "Lyric Rogahn I",
+            "currency_id": 1,
+            "currency": "EUR",
+            "balance": "23405.4171"
+        }
+    }
+###Error Response: ###
+####Not authenticated (CODE 401) ####
+    {
+        "message": "Unauthenticated"
+    }
+####Try to access to another user account (CODE 403) ####
+    {
+        "message": "This action is unauthorized."
+    }
+## Show Transactions Details ##
+Get all the transactions from accounts of the authenticated user.
+###URL: ###
+    /api/transactions
+###Method: ###
+    GET
+###URL Params: ###
+    optional: From=[Date]
+    optional: To=[Date]
+    optional: SourceAccountID=[integer]
+###Success Response (CODE 200): ###
+####Authenticated ####
+    {
+        "data": [
+            {
+                "id": 7,
+                "origin_account_id": 7,
+                "origin_account": {
+                    "id": 7,
+                    "user_id": 4,
+                    "user": "Lyric Rogahn I",
+                    "currency_id": 1,
+                    "currency": "EUR",
+                    "balance": "23405.4171"
+                },
+                "destination_account_id": 6,
+                "destination_account": {
+                    "id": 6,
+                    "user_id": 3,
+                    "user": "Lucy Stokes",
+                    "currency_id": 2,
+                    "currency": "USD"
+                },
+                "amount": "13117.9197",
+                "description": "Qui minima sit praesentium. Quidem laboriosam vero sint ipsum sapiente amet debitis. Magni neque doloribus reprehenderit est quis eaque.",
+                "converted": "15945.2249",
+                "complete": "2021-05-17 17:18:16"
+            },
+            ...
+        ]
+    }
+###Error Response: ###
+####Not authenticated (CODE 401) ####
+    {
+        "message": "Unauthenticated"
+    }
+####Try to access to another user account (CODE 403) ####
+    {
+        "message": "This action is unauthorized."
+    }
+## Make Transaction ##
+Make a transaction.
+###URL: ###
+    /api/transfer
+###Method: ###
+    POST
+###URL Params: ###
+    required: body=[{
+        accountFrom=[integer]
+        accountTo=[integer]
+        amoun=[float]
+        date=[Timestamp]
+        description=[string]
+    }]
+###Success Response (CODE 200): ###
+####Authenticated ####
+    {
+        "data": {
+            "id": 14,
+            "origin_account_id": 8,
+            "origin_account": {
+                "id": 8,
+                "user_id": 4,
+                "user": "Lyric Rogahn I",
+                "currency_id": 1,
+                "currency": "EUR",
+                "balance": "32996.4612"
+            },
+            "destination_account_id": 4,
+            "destination_account": {
+                "id": 4,
+                "user_id": 2,
+                "user": "Claudia Orn",
+                "currency_id": 3,
+                "currency": "UYU"
+            },
+            "amount": 1.12,
+            "description": "Test transaction",
+            "converted": 60.163554080000004,
+            "complete": "2021-05-17T17:58:30.342324Z"
+        }
+    }
+###Error Response: ###
+####Not authenticated (CODE 401) ####
+    {
+        "message": "Unauthenticated"
+    }
+####Try to send from another user account (CODE 403) ####
+    {
+        "message": "This action is unauthorized."
+    }
+<br>
 
-### Premium Partners
+[Here](https://www.getpostman.com/collections/1260951c8b7e21d6739a) you can download a postman collection.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## Possible improvements
+- Add feature and unit tests
+- Define a cronjob that updates the cache every 'x' amount of time, where 'x' is the Fixerio update time.
+- Parameterizable commission: a column could be added in the accounts table that indicates the commission for its operations, thus being able to have a finer control over the commissions and allowing to offer different plans to different users.
+- Define minimum transaction amount, this can be added in the currencies table, allowing different minimum amounts for each currency, in turn you can define a listener so that when one changes, the increase (or decrease) is affected in the others currencies.
+- Use redis for cache.
+- Defining versioning in the API routes, to follow the instructions of the requested routes I did not do it, but you could add "vX" as a prefix in the routes, where X is the version number, allowing greater flexibility when updating the endpoints.
